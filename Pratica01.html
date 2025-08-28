@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Introdução a Economia e Finanças</title>
+  <meta name="description" content="Página didática com noções básicas de economia e finanças pessoais, imagens e um simulador de juros compostos.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg: #0f172a;           /* Slate-900 */
+      --panel: #111827;        /* Gray-900 */
+      --soft: #1f2937;         /* Gray-800 */
+      --text: #e5e7eb;         /* Gray-200 */
+      --muted: #94a3b8;        /* Slate-400 */
+      --accent: #22c55e;       /* Emerald-500 */
+      --accent-2: #38bdf8;     /* Sky-400 */
+      --danger: #ef4444;       /* Red-500 */
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 15% -10%, #1f2937 0%, transparent 50%),
+                  radial-gradient(1200px 600px at 110% 10%, #0ea5e9 0%, transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+      font-variant-numeric: tabular-nums;
+    }
+    .container{max-width:1120px;margin:0 auto;padding:24px}
+    header{
+      display:flex; align-items:center; justify-content:space-between; gap:16px; margin:8px 0 24px;
+    }
+    .brand{display:flex; align-items:center; gap:12px}
+    .brand .logo{width:40px; height:40px; border-radius:12px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display:grid; place-items:center; font-weight:700}
+    .brand h1{font-size: clamp(20px, 3vw, 28px); margin:0}
+    .muted{color:var(--muted)}
+    .row{display:grid; grid-template-columns: 1.1fr 0.9fr; gap:24px}
+    @media (max-width: 900px){.row{grid-template-columns:1fr}}
+
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0)); border:1px solid rgba(148,163,184,0.15); border-radius:var(--radius); padding:20px; backdrop-filter: blur(6px); box-shadow: 0 8px 20px rgba(0,0,0,0.25)}
+    .card h2{margin:0 0 12px; font-size:clamp(18px,2.6vw,24px)}
+    .card p{line-height:1.6}
+
+    .hero{
+      position:relative; overflow:hidden; display:grid; grid-template-columns:1.2fr 0.8fr; gap:20px; align-items:center;
+      background:radial-gradient(800px 300px at 0% 0%, #0ea5e933 0%, transparent 70%), linear-gradient(180deg, #0b1220, #0f172a);
+      border:1px solid rgba(148,163,184,0.18); border-radius:var(--radius); padding:24px;
+    }
+    .hero h2{font-size: clamp(22px, 3.2vw, 36px); margin:0 0 12px}
+    .hero p{margin:0}
+    .hero figure{margin:0; display:flex; align-items:center; justify-content:center}
+    .hero img{max-width:100%; height:auto; border-radius:16px; border:1px solid rgba(148,163,184,0.2)}
+
+    .grid{display:grid; grid-template-columns: repeat(3, 1fr); gap:18px}
+    @media (max-width: 940px){.grid{grid-template-columns:1fr 1fr}}
+    @media (max-width: 640px){.grid{grid-template-columns:1fr}}
+
+    .kpi{display:flex; align-items:center; gap:12px; padding:14px; background: linear-gradient(180deg, rgba(56,189,248,0.08), rgba(56,189,248,0.00)); border:1px solid rgba(56,189,248,0.25); border-radius:14px}
+    .kpi strong{font-size:18px}
+
+    .inputs{display:grid; grid-template-columns:repeat(2,1fr); gap:12px}
+    @media (max-width: 520px){.inputs{grid-template-columns:1fr}}
+    input, select, button{
+      background:var(--soft); color:var(--text); border:1px solid rgba(148,163,184,0.25); border-radius:12px; padding:12px 14px; width:100%;
+      font: inherit;
+    }
+    input::placeholder{color:#94a3b8aa}
+    button{cursor:pointer; font-weight:600; border-color:transparent; background:linear-gradient(135deg, var(--accent), #16a34a)}
+    button.secondary{background:transparent; border-color:rgba(148,163,184,0.35)}
+
+    .result{display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; margin-top:12px}
+    @media (max-width: 680px){.result{grid-template-columns:1fr}}
+    .pill{padding:12px; border:1px dashed rgba(148,163,184,0.35); border-radius:12px; background:rgba(2,6,23,0.3)}
+
+    canvas{width:100%; max-width:100%; height:320px; background: #0b1220; border-radius:16px; border:1px solid rgba(148,163,184,0.2)}
+
+    footer{margin:26px 0 10px; text-align:center; color:var(--muted); font-size:14px}
+
+    .toggle{display:flex; align-items:center; gap:10px}
+    .toggle input{width:auto}
+  </style>
+</head>
+<body>
+  <noscript><div class="container"><p class="card" role="alert">Ative o JavaScript para usar o simulador de juros e o gráfico 🙂</p></div></noscript>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true">R$</div>
+        <div>
+          <h1>Economia & Finanças</h1>
+          <div class="muted">Uma introdução prática com imagens e simulador</div>
+        </div>
+      </div>
+      <div class="toggle">
+        <label for="theme">Tema escuro</label>
+        <input id="theme" type="checkbox" checked>
+      </div>
+    </header>
+
+    <!-- HERO with decorative photo -->
+    <section class="hero" aria-labelledby="intro-title">
+      <div>
+        <h2 id="intro-title">Como a economia influencia suas finanças do dia a dia</h2>
+        <p>Economia estuda como pessoas, empresas e governos decidem <strong>alocar recursos escassos</strong>. Finanças foca em <strong>como administrar dinheiro</strong> — poupar, investir e lidar com riscos. Juros, inflação e renda formam a base dessas decisões.</p>
+        <div style="margin-top:14px; display:grid; grid-template-columns:1fr 1fr; gap:10px">
+          <div class="kpi" title="Inflação corrói o poder de compra">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 3v18h18" stroke="#38bdf8" stroke-width="2"/><path d="M7 17l3-3 3 3 6-6" stroke="#22c55e" stroke-width="2"/></svg>
+            <div>
+              <div class="muted">Conceito-chave</div>
+              <strong>Inflação x Juros</strong>
+            </div>
+          </div>
+          <div class="kpi" title="Diversifique para equilibrar risco e retorno">
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="9" stroke="#38bdf8" stroke-width="2"/><path d="M12 3v9l7 7" stroke="#22c55e" stroke-width="2"/></svg>
+            <div>
+              <div class="muted">Conceito-chave</div>
+              <strong>Risco x Retorno</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+      <figure>
+        <!-- Foto com crédito do Unsplash -->
+        <img alt="Moedas crescendo em pilhas com uma linha de tendência" src="https://images.unsplash.com/photo-1554224154-22dec7ec8818?q=80&w=1280&auto=format&fit=crop" />
+      </figure>
+    </section>
+
+    <section class="row" style="margin-top:24px">
+      <article class="card" aria-labelledby="conceitos-title">
+        <h2 id="conceitos-title">Conceitos rápidos</h2>
+        <ul>
+          <li><strong>Inflação:</strong> aumento geral dos preços ao longo do tempo; reduz o poder de compra.</li>
+          <li><strong>Taxa de juros:</strong> custo do dinheiro no tempo. Juros altos encarecem crédito e favorecem renda fixa; juros baixos incentivam consumo e investimento.</li>
+          <li><strong>PIB:</strong> soma de bens e serviços finais produzidos em um país — um termômetro da atividade econômica.</li>
+          <li><strong>Orçamento pessoal:</strong> planejar entradas (salário, renda extra) e saídas (moradia, transporte, lazer) para sobrar e investir.</li>
+          <li><strong>Juros compostos:</strong> “juros sobre juros”. Quanto mais tempo investido, maior o efeito da capitalização.</li>
+        </ul>
+        <figure style="margin-top:12px; display:flex; gap:12px; align-items:center; flex-wrap:wrap">
+          <!-- Imagem SVG embutida (sempre disponível) -->
+          <img alt="Cofrinho em SVG" width="160" height="120" src='data:image/svg+xml;utf8,
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 140">
+              <rect width="200" height="140" rx="18" fill="%23111827"/>
+              <g transform="translate(0,-6)">
+                <ellipse cx="100" cy="96" rx="88" ry="44" fill="%2322c55e"/>
+                <rect x="84" y="40" width="32" height="10" rx="4" fill="%230b1220"/>
+                <circle cx="52" cy="90" r="8" fill="%230b1220"/>
+                <circle cx="148" cy="90" r="8" fill="%230b1220"/>
+                <circle cx="100" cy="36" r="16" fill="%23ffd54a"/>
+                <text x="100" y="41" text-anchor="middle" font-size="12" fill="%230b1220" font-family="Inter">R$</text>
+              </g>
+            </svg>' />
+          <img alt="Gráfico de linha em SVG" width="180" height="120" src='data:image/svg+xml;utf8,
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 140">
+              <defs>
+                <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+                  <stop offset="0%" stop-color="%2338bdf8" stop-opacity="0.7"/>
+                  <stop offset="100%" stop-color="%2338bdf8" stop-opacity="0.05"/>
+                </linearGradient>
+              </defs>
+              <rect width="220" height="140" rx="18" fill="%23111827"/>
+              <path d="M20 110 L60 90 L100 100 L140 70 L180 40 L200 30" fill="none" stroke="%2338bdf8" stroke-width="3"/>
+              <path d="M20 110 L60 90 L100 100 L140 70 L180 40 L200 30 L200 120 L20 120 Z" fill="url(%23g)"/>
+              <circle cx="200" cy="30" r="6" fill="%2322c55e"/>
+            </svg>' />
+          <figcaption class="muted">Imagens: foto (Unsplash) e ilustrações SVG próprias.</figcaption>
+        </figure>
+      </article>
+
+      <aside class="card" aria-labelledby="simulador-title">
+        <h2 id="simulador-title">Simulador de Juros Compostos</h2>
+        <div class="inputs" style="margin-bottom:10px">
+          <label>
+            <span class="muted">Aporte inicial (R$)</span>
+            <input type="number" id="inicial" placeholder="Ex.: 1000" min="0" step="100" value="1000">
+          </label>
+          <label>
+            <span class="muted">Aporte mensal (R$)</span>
+            <input type="number" id="mensal" placeholder="Ex.: 200" min="0" step="50" value="200">
+          </label>
+          <label>
+            <span class="muted">Taxa anual (%)</span>
+            <input type="number" id="taxa" placeholder="Ex.: 10" min="0" step="0.1" value="10">
+          </label>
+          <label>
+            <span class="muted">Prazo (anos)</span>
+            <input type="number" id="anos" placeholder="Ex.: 5" min="1" max="50" step="1" value="5">
+          </label>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap">
+          <button id="calcular">Calcular</button>
+          <button class="secondary" id="limpar">Limpar</button>
+        </div>
+        <div class="result">
+          <div class="pill"><div class="muted">Total investido</div><strong id="investido">R$ 0,00</strong></div>
+          <div class="pill"><div class="muted">Juros ganhos</div><strong id="juros">R$ 0,00</strong></div>
+          <div class="pill"><div class="muted">Valor futuro</div><strong id="futuro">R$ 0,00</strong></div>
+        </div>
+        <div style="margin-top:14px">
+          <canvas id="grafico" aria-label="Gráfico de evolução do investimento" role="img"></canvas>
+        </div>
+      </aside>
+    </section>
+
+    <section class="card" style="margin-top:24px" aria-labelledby="dicas-title">
+      <h2 id="dicas-title">Três hábitos financeiros que funcionam</h2>
+      <div class="grid">
+        <div>
+          <h3>1) Pague-se primeiro</h3>
+          <p>Separe uma parte da renda assim que receber (ex.: 10–20%) e automatize o aporte. A constância vence o improviso.</p>
+        </div>
+        <div>
+          <h3>2) Tenha reserva</h3>
+          <p>Monte um colchão de 3 a 6 meses de despesas em produtos de baixo risco e alta liquidez. Ele protege contra imprevistos.</p>
+        </div>
+        <div>
+          <h3>3) Diversifique</h3>
+          <p>Combine classes de ativos (renda fixa, ações, fundos, internacional) de acordo com seu perfil de risco e objetivos.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <small>Conteúdo educativo. Simulador meramente ilustrativo – não constitui recomendação de investimento.</small>
+    </footer>
+  </div>
+
+  <script>
+    // Tema claro/escuro (toggle simples)
+    const themeToggle = document.getElementById('theme');
+    themeToggle.addEventListener('change', () => {
+      if(!themeToggle.checked){
+        document.documentElement.style.setProperty('--bg', '#f6f7fb');
+        document.documentElement.style.setProperty('--panel', '#ffffff');
+        document.documentElement.style.setProperty('--soft', '#eef2f7');
+        document.documentElement.style.setProperty('--text', '#0b1220');
+        document.documentElement.style.setProperty('--muted', '#475569');
+      } else {
+        document.documentElement.style.setProperty('--bg', '#0f172a');
+        document.documentElement.style.setProperty('--panel', '#111827');
+        document.documentElement.style.setProperty('--soft', '#1f2937');
+        document.documentElement.style.setProperty('--text', '#e5e7eb');
+        document.documentElement.style.setProperty('--muted', '#94a3b8');
+      }
+    });
+
+    // Util
+    const BRL = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    function calc(){
+      const inicial = Math.max(0, Number(document.getElementById('inicial').value || 0));
+      const mensal  = Math.max(0, Number(document.getElementById('mensal').value  || 0));
+      const taxaA   = Math.max(0, Number(document.getElementById('taxa').value   || 0));
+      const anos    = Math.min(50, Math.max(1, Number(document.getElementById('anos').value || 1)));
+
+      // Converte taxa anual para mensal equivalente (capitalização composta)
+      const i = Math.pow(1 + taxaA/100, 1/12) - 1; // taxa mensal
+      const n = Math.round(anos * 12);
+
+      let saldo = inicial;
+      let investido = inicial;
+
+      const series = [{x: 0, y: saldo}];
+      for(let m=1; m<=n; m++){
+        saldo = saldo * (1 + i) + mensal; // aporte no fim do mês
+        investido += mensal;
+        if(m % 12 === 0){
+          series.push({x: m/12, y: saldo});
+        }
+      }
+      const juros = Math.max(0, saldo - investido);
+
+      // Atualiza UI
+      document.getElementById('investido').textContent = BRL.format(investido);
+      document.getElementById('juros').textContent     = BRL.format(juros);
+      document.getElementById('futuro').textContent    = BRL.format(saldo);
+
+      drawChart(series);
+    }
+
+    // Gráfico simples em Canvas 2D (sem bibliotecas)
+    const canvas = document.getElementById('grafico');
+    const ctx = canvas.getContext('2d');
+
+    function drawChart(points){
+      const dpr = window.devicePixelRatio || 1;
+      const W = canvas.clientWidth; const H = canvas.clientHeight;
+      canvas.width = Math.floor(W * dpr); canvas.height = Math.floor(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Limpa
+      ctx.clearRect(0,0,W,H);
+
+      // Margens
+      const m = {l: 40, r: 20, t: 16, b: 30};
+      const iw = W - m.l - m.r, ih = H - m.t - m.b;
+
+      const xs = points.map(p=>p.x);
+      const ys = points.map(p=>p.y);
+      const xMin = 0, xMax = Math.max(1, Math.max(...xs));
+      const yMin = 0, yMax = Math.max(...ys) * 1.05;
+
+      const sx = x => m.l + (x - xMin) / (xMax - xMin) * iw;
+      const sy = y => m.t + ih - (y - yMin) / (yMax - yMin) * ih;
+
+      // Eixos
+      ctx.strokeStyle = 'rgba(148,163,184,0.35)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(m.l, m.t); ctx.lineTo(m.l, H - m.b); // Y
+      ctx.moveTo(m.l, H - m.b); ctx.lineTo(W - m.r, H - m.b); // X
+      ctx.stroke();
+
+      // Grid horizontal (3 linhas)
+      ctx.setLineDash([4,6]);
+      for(let g=1; g<=3; g++){
+        const y = m.t + (ih * g/4);
+        ctx.beginPath(); ctx.moveTo(m.l, y); ctx.lineTo(W - m.r, y); ctx.stroke();
+      }
+      ctx.setLineDash([]);
+
+      // Linha
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      points.forEach((p,idx)=>{ const X = sx(p.x), Y = sy(p.y); idx? ctx.lineTo(X,Y): ctx.moveTo(X,Y); });
+      ctx.stroke();
+
+      // Área
+      const grad = ctx.createLinearGradient(0, m.t, 0, H - m.b);
+      grad.addColorStop(0, 'rgba(56,189,248,0.50)');
+      grad.addColorStop(1, 'rgba(56,189,248,0.05)');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      points.forEach((p,idx)=>{ const X = sx(p.x), Y = sy(p.y); idx? ctx.lineTo(X,Y): ctx.moveTo(X,Y); });
+      ctx.lineTo(sx(points.at(-1).x), H - m.b);
+      ctx.lineTo(sx(points[0].x), H - m.b);
+      ctx.closePath();
+      ctx.fill();
+
+      // Marcador final
+      const last = points.at(-1);
+      ctx.fillStyle = '#22c55e';
+      ctx.beginPath(); ctx.arc(sx(last.x), sy(last.y), 5, 0, Math.PI*2); ctx.fill();
+
+      // Rótulos e ticks
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--muted').trim() || '#94a3b8';
+      ctx.font = '12px Inter, system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      for(let ano=0; ano<=xMax; ano++){
+        const X = sx(ano);
+        ctx.fillText(String(ano)+'a', X, H - m.b + 18);
+        ctx.beginPath(); ctx.moveTo(X, H - m.b - 4); ctx.lineTo(X, H - m.b + 4); ctx.strokeStyle='rgba(148,163,184,0.35)'; ctx.stroke();
+      }
+    }
+
+    // Ações
+    document.getElementById('calcular').addEventListener('click', calc);
+    document.getElementById('limpar').addEventListener('click', ()=>{
+      document.getElementById('inicial').value = 1000;
+      document.getElementById('mensal').value  = 200;
+      document.getElementById('taxa').value    = 10;
+      document.getElementById('anos').value    = 5;
+      calc();
+    });
+
+    // Inicializa
+    calc();
+    window.addEventListener('resize', calc);
+  </script>
+</body>
+</html>
